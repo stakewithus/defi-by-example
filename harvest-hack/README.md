@@ -61,7 +61,7 @@ eve          +17.59M USDT   -17.60M USDC   60.18M fUSDC   20 WETH
 ---------------------------------------------
 ```
 
-## withdraw fUSDC from Harvest
+## withdraw USDC from Harvest
 
 ```
 eve -> 0 (60.18M fUSDC)
