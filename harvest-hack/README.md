@@ -80,3 +80,13 @@ eve -> uni usdc ( 0.38M USDC)
 uni usdc -> eve (93 WETH ($55455))
 eve -> uni usdt (73 WETH ($43,599))
 ```
+
+---
+
+# math
+
+```
+# shares
+f / S = d / B
+f = d * S / B
+```
