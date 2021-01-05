@@ -1,1 +1,5 @@
 memo
+node_modules
+build
+venv
+.env

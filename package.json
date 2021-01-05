@@ -1,0 +1,27 @@
+{
+  "name": "defi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/t4sk/defi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/t4sk/defi/issues"
+  },
+  "homepage": "https://github.com/t4sk/defi#readme",
+  "dependencies": {
+    "ganache-cli": "^6.12.1",
+    "truffle": "^5.1.60"
+  },
+  "devDependencies": {
+    "bn.js": "^5.1.3"
+  }
+}
