@@ -3,7 +3,7 @@ const { DAI, DAI_WHALE } = require("./config");
 
 const IERC20 = artifacts.require("IERC20");
 
-contract("TestUniswap", (accounts) => {
+contract("IERC20", (accounts) => {
   const TOKEN = DAI;
   const WHALE = DAI_WHALE;
 
