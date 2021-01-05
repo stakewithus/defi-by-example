@@ -22,5 +22,5 @@ ganache-cli \
 --unlock $USDT_WHALE \
 --networkId 999
 
-npx truffle test --network mainnet_fork test/TestUniswap.test.js
+npx truffle test --network mainnet_fork test/test-erc20.js
 ```
