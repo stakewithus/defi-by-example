@@ -21,6 +21,7 @@ ganache-cli \
 --unlock $DAI_WHALE \
 --unlock $USDC_WHALE \
 --unlock $USDT_WHALE \
+--unlock $WBTC_WHALE \
 --networkId 999
 
 # using archivenode.io (limit 10 req / sec)
@@ -36,6 +37,7 @@ ganache-cli \
 --unlock $DAI_WHALE \
 --unlock $USDC_WHALE \
 --unlock $USDT_WHALE \
+--unlock $WBTC_WHALE \
 --networkId 999
 
 npx truffle test --network mainnet_fork test/test-erc20.js
