@@ -5,7 +5,7 @@
 - [x] uniswap swap
   - [x] get reserves (Tether WETH)
   - [x] swap (flash loan)
-- [ ] dydx solo margin
+- [x] dydx solo margin
 - [x] curve
   - [x] get virtual price
   - [x] calc_withdraw_one_coin

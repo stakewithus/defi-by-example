@@ -9,6 +9,22 @@ pip install vyper
 cp .env.sample .env
 ```
 
+### For windows 
+```
+virtualenv -p python3 venv
+venv\Scripts\activate
+pip install vyper
+
+```
+### To run 
+```
+venv\Scripts\activate
+truffle compile
+
+```
+
+
+
 ### Test
 
 ```shell
@@ -41,4 +57,6 @@ ganache-cli \
 --networkId 999
 
 npx truffle test --network mainnet_fork test/test-erc20.js
+npx truffle test --network mainnet_fork test/test-dydx.js
+
 ```
