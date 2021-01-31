@@ -19,7 +19,7 @@ contract("TestDydxSoloMargin", (accounts) => {
   const FUND_AMOUNT = pow(10, DECIMALS).mul(new BN(2000000));
   const BORROW_AMOUNT = pow(10, DECIMALS).mul(new BN(1000000));
 
-  let testFlashSwap;
+  let testDydxSoloMargin;
   let token;
   beforeEach(async () => {
     token = await IERC20.at(TOKEN);
@@ -30,7 +30,7 @@ contract("TestDydxSoloMargin", (accounts) => {
     // send enough token to cover fee
     const bal = await token.balanceOf(WHALE);
     assert(bal.gte(FUND_AMOUNT), "balance < FUND");
-    await token.transfer(testFlashSwap.address, FUND_AMOUNT, {
+    await token.transfer(testDydxSoloMargin.address, FUND_AMOUNT, {
       from: WHALE,
     });
   });
@@ -43,5 +43,7 @@ contract("TestDydxSoloMargin", (accounts) => {
         from: WHALE,
       }
     );
+
+    console.log(`${await testDydxSoloMargin.lastAmount()}`);
   });
 });
