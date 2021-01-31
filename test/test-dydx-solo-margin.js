@@ -10,11 +10,11 @@ const {
 } = require("./config");
 
 const IERC20 = artifacts.require("IERC20");
-const TestFlashSwap = artifacts.require("TestFlashSwap");
+const TestDydxSoloMargin = artifacts.require("TestDydxSoloMargin");
 
-contract("TestFlashSwap", (accounts) => {
+contract("TestDydxSoloMargin", (accounts) => {
   const WHALE = USDC_WHALE;
-  const TOKEN_BORROW = USDC;
+  const TOKEN = USDC;
   const DECIMALS = 6;
   const FUND_AMOUNT = pow(10, DECIMALS).mul(new BN(2000000));
   const BORROW_AMOUNT = pow(10, DECIMALS).mul(new BN(1000000));
@@ -22,8 +22,8 @@ contract("TestFlashSwap", (accounts) => {
   let testFlashSwap;
   let token;
   beforeEach(async () => {
-    token = await IERC20.at(TOKEN_BORROW);
-    testFlashSwap = await TestFlashSwap.new();
+    token = await IERC20.at(TOKEN);
+    testDydxSoloMargin = await TestDydxSoloMargin.new();
 
     await sendEther(web3, accounts[0], WHALE, 1);
 
@@ -36,12 +36,12 @@ contract("TestFlashSwap", (accounts) => {
   });
 
   it("flash loan", async () => {
-    const tx = await testFlashSwap.flashLoan(token.address, BORROW_AMOUNT, {
-      from: WHALE,
-    });
-
-    for (const log of tx.logs) {
-      console.log(log.args.message, log.args.val.toString());
-    }
+    const tx = await testDydxSoloMargin.initiateFlashLoan(
+      token.address,
+      BORROW_AMOUNT,
+      {
+        from: WHALE,
+      }
+    );
   });
 });
