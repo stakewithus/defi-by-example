@@ -9,21 +9,22 @@ pip install vyper
 cp .env.sample .env
 ```
 
-### For windows 
+### For windows
+
 ```
 virtualenv -p python3 venv
 venv\Scripts\activate
 pip install vyper
 
 ```
-### To run 
+
+### To run
+
 ```
 venv\Scripts\activate
 truffle compile
 
 ```
-
-
 
 ### Test
 
@@ -31,7 +32,7 @@ truffle compile
 source .env
 
 # using infura.io
-ganache-cli \
+npx ganache-cli \
 --fork https://mainnet.infura.io/v3/$WEB3_INFURA_PROJECT_ID \
 --unlock $WETH_WHALE \
 --unlock $DAI_WHALE \

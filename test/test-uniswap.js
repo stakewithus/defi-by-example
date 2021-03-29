@@ -27,7 +27,6 @@ contract("TestUniswap", (accounts) => {
   });
 
   it("should pass", async () => {
-    await tokenIn.approve(testUniswap.address, AMOUNT_IN, { from: WHALE });
     await testUniswap.swap(
       tokenIn.address,
       tokenOut.address,
