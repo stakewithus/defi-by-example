@@ -16,7 +16,7 @@ TOKENS: constant(address[3]) = [
   DAI,
   USDC,
   USDT
-] 
+]
 
 @external
 def swap(i: uint256, j: uint256):

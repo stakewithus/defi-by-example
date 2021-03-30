@@ -40,6 +40,9 @@ def addLiquidity(_tokenA: address, _tokenB: address, _amountA: uint256, _amountB
     ERC20(_tokenA).transferFrom(msg.sender, self, _amountA)
     ERC20(_tokenB).transferFrom(msg.sender, self, _amountB)
 
+    ERC20(_tokenA).approve(ROUTER, _amountA)
+    ERC20(_tokenB).approve(ROUTER, _amountB)
+
     amountA: uint256 = 0
     amountB: uint256 = 0
     liquidity: uint256 = 0
@@ -67,7 +70,7 @@ def removeLiquidity(_tokenA: address, _tokenB: address):
 
     amountA: uint256 = 0
     amountB: uint256 = 0
-    (amountA, amountB,) = UniswapV2Router(ROUTER).removeLiquidity(
+    (amountA, amountB) = UniswapV2Router(ROUTER).removeLiquidity(
         _tokenA,
         _tokenB,
         liquidity,
