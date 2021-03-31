@@ -2,14 +2,14 @@
 pragma solidity ^0.7;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./interfaces/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/aave/IFlashLoanReceiver.sol";
 import "./interfaces/aave/ILendingPoolAddressProvider.sol";
 import "./interfaces/aave/ILendingPool.sol";
 
-/** 
+/**
     !!!
-    Never keep funds permanently on your flash loan receiver contract as they could be 
+    Never keep funds permanently on your flash loan receiver contract as they could be
     exposed to a 'griefing' attack, where the stored funds are used by an attacker.
     !!!
  */

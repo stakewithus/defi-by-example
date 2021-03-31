@@ -2,7 +2,7 @@
 pragma solidity ^0.7;
 
 import "./interfaces/WETH10.sol";
-import "./interfaces/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract TestWethFlashMint {
   address private WETH = 0xf4BB2e28688e89fCcE3c0580D37d36A7672E8A9F;
