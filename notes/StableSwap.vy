@@ -403,13 +403,22 @@ def get_y(i: int128, j: int128, x: uint256, xp_: uint256[N_COINS]) -> uint256:
             continue
         S_ += _x
         c = c * D / (_x * N_COINS)
-    c = c * D / (Ann * N_COINS)
-    b: uint256 = S_ + D / Ann  # - D
+
+    # swapping from X to Y (0 to 1)
+    # _x | S     | c |
+    # ------------------------------------------
+    # X  | X     | D^2 / (X * n)
+    # Y  | X     | D^2 / (X * n)
+    # Z  | X + Z | D^3 / (X * Z * n^2)
+
+    c = c * D / (Ann * N_COINS) # D^4 / (A * n^n * X * Z * n^3)
+    b: uint256 = S_ + D / Ann  # X + Z + D / (A * n^n)
     y_prev: uint256 = 0
     y: uint256 = D
     for _i in range(255):
         y_prev = y
         y = (y*y + c) / (2 * y + b - D)
+        # (y^2 + D^4 / (A * n^n * X * Z * n^3)) / (2 * y + X + Z + D / (A * n^n) - D)
         # Equality with the precision of 1
         if y > y_prev:
             if y - y_prev <= 1:
