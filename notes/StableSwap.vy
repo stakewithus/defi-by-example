@@ -193,6 +193,18 @@ def _xp_mem(_balances: uint256[N_COINS]) -> uint256[N_COINS]:
 @pure
 @internal
 def get_D(xp: uint256[N_COINS], amp: uint256) -> uint256:
+    # amp = A * (n ^ (n - 1))
+    """
+    n = 3
+    xp = [X, Y, Z]
+    S = 0
+
+    _x | S
+    -----------------
+    X  | X
+    Y  | X + Y
+    Z  | X + Y + Z
+    """
     S: uint256 = 0
     for _x in xp:
         S += _x
@@ -201,11 +213,21 @@ def get_D(xp: uint256[N_COINS], amp: uint256) -> uint256:
 
     Dprev: uint256 = 0
     D: uint256 = S
-    Ann: uint256 = amp * N_COINS
+    Ann: uint256 = amp * N_COINS # A * (n ^ n)
     for _i in range(255):
+        # D = S, xp = [X, Y, Z]
+        # D_P = D
+        # -------------
+        # _x  | D_P
+        # ---------------------
+        # X   | D * D / (X * n)
+        # Y   | D^3 / (X * Y * n^2)
+        # Z   | D^4 / (X * Y * Z * n^3)
+        # ... | D^(n+1) / ((X1...Xn) * n^n)
         D_P: uint256 = D
         for _x in xp:
             D_P = D_P * D / (_x * N_COINS)  # If division by 0, this will be borked: only withdrawal will work. And that is good
+        # newton's method
         Dprev = D
         D = (Ann * S + D_P * N_COINS) * D / ((Ann - 1) * D + (N_COINS + 1) * D_P)
         # Equality with the precision of 1
@@ -351,6 +373,7 @@ def add_liquidity(amounts: uint256[N_COINS], min_mint_amount: uint256):
     log AddLiquidity(msg.sender, amounts, fees, D1, token_supply + mint_amount)
 
 
+# tokens [X, Y, Z], i = 0, j = 1
 @view
 @internal
 def get_y(i: int128, j: int128, x: uint256, xp_: uint256[N_COINS]) -> uint256:
@@ -364,11 +387,11 @@ def get_y(i: int128, j: int128, x: uint256, xp_: uint256[N_COINS]) -> uint256:
     assert i >= 0
     assert i < N_COINS
 
-    amp: uint256 = self._A()
+    amp: uint256 = self._A() # A * (n ** (n - 1))
     D: uint256 = self.get_D(xp_, amp)
     c: uint256 = D
     S_: uint256 = 0
-    Ann: uint256 = amp * N_COINS
+    Ann: uint256 = amp * N_COINS # A * (n ** n)
 
     _x: uint256 = 0
     for _i in range(N_COINS):
