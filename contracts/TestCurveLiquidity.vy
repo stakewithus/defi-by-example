@@ -26,13 +26,31 @@ TOKENS: constant(address[3]) = [
 ]
 
 
+@internal
+def _safeApprove(token: address, spender: address, amount: uint256):
+  res: Bytes[32] = raw_call(
+    token,
+    concat(
+        method_id("approve(address,uint256)"),
+        convert(spender, bytes32),
+        convert(amount, bytes32),
+    ),
+    max_outsize=32,
+  )
+  if len(res) > 0:
+      assert convert(res, bool)
+
+
 @external
 def addLiquidity():
   tokens: address[3] = TOKENS
   balances: uint256[3] = [0, 0, 0]
   for i in range(3):
     balances[i] = ERC20(tokens[i]).balanceOf(self)
-    ERC20(tokens[i]).approve(SWAP, balances[i])
+    if balances[i] > 0:
+      # USDT does not return True
+      # ERC20(tokens[i]).approve(SWAP, balances[i])
+      self._safeApprove(tokens[i], SWAP, balances[i])
   StableSwap(SWAP).add_liquidity(balances, 1)
 
 
