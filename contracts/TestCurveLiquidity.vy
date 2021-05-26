@@ -25,6 +25,7 @@ TOKENS: constant(address[3]) = [
   USDT
 ]
 
+
 @external
 def addLiquidity():
   tokens: address[3] = TOKENS
@@ -34,16 +35,19 @@ def addLiquidity():
     ERC20(tokens[i]).approve(SWAP, balances[i])
   StableSwap(SWAP).add_liquidity(balances, 1)
 
+
 @external
 @view
 def getShares() -> uint256:
   return CurveToken(LP).balanceOf(self)
+
 
 @external
 def removeLiquidity():
   shares: uint256 = CurveToken(LP).balanceOf(self)
   minAmounts: uint256[3] = [0, 0, 0]
   StableSwap(SWAP).remove_liquidity(shares, minAmounts)
+
 
 @external
 @view
@@ -53,11 +57,13 @@ def calcWithdrawOneCoin(i: int128) -> (uint256, uint256):
   vp: uint256 = StableSwap(SWAP).get_virtual_price()
   return (w, vp * shares / 10 ** 18)
 
+
 @external
 def removeLiquidityOneCoin(i: int128):
   shares: uint256 = CurveToken(LP).balanceOf(self)
   minAmount: uint256 = 1
   StableSwap(SWAP).remove_liquidity_one_coin(shares, i, 1)
+
 
 @external
 @view
