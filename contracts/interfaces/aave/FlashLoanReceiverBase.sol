@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.7;
+
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+
+import "./IFlashLoanReceiver.sol";
+import "./ILendingPoolAddressProvider.sol";
+import "./ILendingPool.sol";
+
+abstract contract FlashLoanReceiverBase is IFlashLoanReceiver {
+  using SafeERC20 for IERC20;
+  using SafeMath for uint;
+
+  ILendingPoolAddressesProvider public immutable override ADDRESSES_PROVIDER;
+  ILendingPool public immutable override LENDING_POOL;
+
+  constructor(ILendingPoolAddressesProvider provider) public {
+    ADDRESSES_PROVIDER = provider;
+    LENDING_POOL = ILendingPool(provider.getLendingPool());
+  }
+}
