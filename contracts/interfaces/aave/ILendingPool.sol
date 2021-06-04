@@ -4,8 +4,11 @@ pragma solidity ^0.7;
 interface ILendingPool {
   function flashLoan(
     address receiverAddress,
-    address reserve,
-    uint256 amount,
-    bytes calldata params
+    address[] calldata assets,
+    uint[] calldata amounts,
+    uint[] calldata modes,
+    address onBehalfOf,
+    bytes calldata params,
+    uint16 referralCode
   ) external;
 }
