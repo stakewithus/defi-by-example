@@ -20,13 +20,13 @@
   "homepage": "https://github.com/t4sk/defi#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^3.3.0",
-    "ganache-cli": "^6.12.1",
-    "truffle": "^5.1.60"
+    "ganache-cli": "^6.12.2",
+    "truffle": "^5.3.8"
   },
   "devDependencies": {
-    "bn.js": "^5.1.3",
-    "eslint": "^7.18.0",
-    "prettier": "^2.2.1",
-    "prettier-plugin-solidity": "^1.0.0-beta.3"
+    "bn.js": "^5.2.0",
+    "eslint": "^7.27.0",
+    "prettier": "^2.3.0",
+    "prettier-plugin-solidity": "^1.0.0-beta.11"
   }
 }
