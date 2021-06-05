@@ -32,6 +32,7 @@ contract TestAaveFlashLoan is FlashLoanReceiverBase {
     modes[0] = 0;
 
     address onBehalfOf = address(this);
+
     bytes memory params = ""; // extra data to pass abi.encode(...)
     uint16 referralCode = 0;
 
@@ -53,9 +54,8 @@ contract TestAaveFlashLoan is FlashLoanReceiverBase {
     address initiator,
     bytes calldata params
   ) external override returns (bool) {
-    // do stuff here
+    // do stuff here (arbitrage, liquidation, etc...)
     // abi.decode(params) to decode params
-
     for (uint i = 0; i < assets.length; i++) {
       emit Log("borrowed", amounts[i]);
       emit Log("fee", premiums[i]);
@@ -63,7 +63,7 @@ contract TestAaveFlashLoan is FlashLoanReceiverBase {
       uint amountOwing = amounts[i].add(premiums[i]);
       IERC20(assets[i]).approve(address(LENDING_POOL), amountOwing);
     }
-
+    // repay Aave
     return true;
   }
 }
