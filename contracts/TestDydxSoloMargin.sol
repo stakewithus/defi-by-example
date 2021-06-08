@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.1;
+pragma solidity ^0.8.1;
 pragma experimental ABIEncoderV2;
 
 import "./interfaces/dydx/DydxFlashloanBase.sol";
@@ -10,9 +10,9 @@ contract TestDydxSoloMargin is ICallee, DydxFlashloanBase {
 
   // JUST FOR TESTING - ITS OKAY TO REMOVE ALL OF THESE VARS
   address public lastTokenBorrow;
-  uint256 public lastAmount;
+  uint public lastAmount;
   address public lastTokenPay;
-  uint256 public lastamountToRepay;
+  uint public lastamountToRepay;
   bytes public lastUserData;
   address public flashUser;
 
@@ -20,7 +20,7 @@ contract TestDydxSoloMargin is ICallee, DydxFlashloanBase {
 
   struct MyCustomData {
     address token;
-    uint256 repayAmount;
+    uint repayAmount;
   }
 
   // This is the function that will be called postLoan
@@ -33,7 +33,7 @@ contract TestDydxSoloMargin is ICallee, DydxFlashloanBase {
     bytes memory data
   ) public override {
     MyCustomData memory mcd = abi.decode(data, (MyCustomData));
-    uint256 balOfLoanedToken = IERC20(mcd.token).balanceOf(address(this));
+    uint balOfLoanedToken = IERC20(mcd.token).balanceOf(address(this));
 
     // Note that you can ignore the line below
     // if your dydx account (this contract in this case)
@@ -49,7 +49,7 @@ contract TestDydxSoloMargin is ICallee, DydxFlashloanBase {
     //revert("Hello, you haven't encoded your logic");
 
     /*
-        
+
         ACTION HERE
 
         */
@@ -61,14 +61,14 @@ contract TestDydxSoloMargin is ICallee, DydxFlashloanBase {
     lastamountToRepay = mcd.repayAmount; // just for testing
   }
 
-  function initiateFlashLoan(address _token, uint256 _amount) external {
+  function initiateFlashLoan(address _token, uint _amount) external {
     ISoloMargin solo = ISoloMargin(_solo);
 
     // Get marketId from token address
-    uint256 marketId = _getMarketIdFromTokenAddress(_solo, _token);
+    uint marketId = _getMarketIdFromTokenAddress(_solo, _token);
 
     // Calculate repay amount (_amount + (2 wei))
-    uint256 repayAmount = _getRepaymentAmountInternal(_amount);
+    uint repayAmount = _getRepaymentAmountInternal(_amount);
     // Approve transfer from
     IERC20(_token).approve(_solo, repayAmount);
 
@@ -79,7 +79,7 @@ contract TestDydxSoloMargin is ICallee, DydxFlashloanBase {
     //Call a function (i.e. Logic to handle flashloaned funds). (Call)
     operations[1] = _getCallAction(
       // Encode MyCustomData for callFunction
-      abi.encode(MyCustomData({ token: _token, repayAmount: repayAmount }))
+      abi.encode(MyCustomData({token: _token, repayAmount: repayAmount}))
     );
     //Deposit back x (+2 wei) amount of tokens. (Deposit)
     operations[2] = _getDepositAction(marketId, repayAmount);

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7;
+pragma solidity ^0.8;
 
 import "./interfaces/WETH10.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -9,10 +9,10 @@ contract TestWethFlashMint {
   bytes32 public immutable CALLBACK_SUCCESS =
     keccak256("ERC3156FlashBorrower.onFlashLoan");
 
-  event Log(string name, uint256 val);
+  event Log(string name, uint val);
 
   function flash() external {
-    uint256 amount = 10**18;
+    uint amount = 10**18;
     IERC20(WETH).approve(WETH, amount);
     WETH10(WETH).flashLoan(address(this), WETH, amount, "");
   }
@@ -21,11 +21,11 @@ contract TestWethFlashMint {
   function onFlashLoan(
     address sender,
     address token,
-    uint256 amount,
-    uint256 fee,
+    uint amount,
+    uint fee,
     bytes calldata data
   ) external returns (bytes32) {
-    uint256 bal = IERC20(WETH).balanceOf(address(this));
+    uint bal = IERC20(WETH).balanceOf(address(this));
     emit Log("balance", bal);
 
     return CALLBACK_SUCCESS;

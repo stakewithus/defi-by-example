@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7;
+pragma solidity ^0.8;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/Uniswap.sol";
@@ -12,8 +12,8 @@ contract TestUniswap {
   function swap(
     address _tokenIn,
     address _tokenOut,
-    uint256 _amountIn,
-    uint256 _amountOutMin,
+    uint _amountIn,
+    uint _amountOutMin,
     address _to
   ) external {
     IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
@@ -43,8 +43,8 @@ contract TestUniswap {
   function getAmountOutMin(
     address _tokenIn,
     address _tokenOut,
-    uint256 _amountIn
-  ) external view returns (uint256) {
+    uint _amountIn
+  ) external view returns (uint) {
     address[] memory path;
     if (_tokenIn == WETH || _tokenOut == WETH) {
       path = new address[](2);
@@ -58,7 +58,7 @@ contract TestUniswap {
     }
 
     // same length as path
-    uint256[] memory amountOutMins =
+    uint[] memory amountOutMins =
       IUniswapV2Router(UNISWAP_V2_ROUTER).getAmountsOut(_amountIn, path);
 
     return amountOutMins[path.length - 1];

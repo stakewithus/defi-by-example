@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7;
+pragma solidity ^0.8;
 
 // https://uniswap.org/docs/v2/smart-contracts
 
