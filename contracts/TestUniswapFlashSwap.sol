@@ -13,13 +13,16 @@ interface IUniswapV2Callee {
   ) external;
 }
 
-contract TestFlashSwap is IUniswapV2Callee {
+contract TestUniswapFlashSwap is IUniswapV2Callee {
+  // Uniswap V2 router
+  // 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
   address private constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+  // Uniswap V2 factory
   address private constant FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
 
   event Log(string message, uint val);
 
-  function flashLoan(address _tokenBorrow, uint _amount) external {
+  function testFlashSwap(address _tokenBorrow, uint _amount) external {
     address pair = IUniswapV2Factory(FACTORY).getPair(_tokenBorrow, WETH);
     require(pair != address(0), "!pair");
 
@@ -34,7 +37,7 @@ contract TestFlashSwap is IUniswapV2Callee {
     IUniswapV2Pair(pair).swap(amount0Out, amount1Out, address(this), data);
   }
 
-  // called by PAIR
+  // called by pair contract
   function uniswapV2Call(
     address _sender,
     uint _amount0,
@@ -49,6 +52,7 @@ contract TestFlashSwap is IUniswapV2Callee {
 
     (address tokenBorrow, uint amount) = abi.decode(_data, (address, uint));
 
+    // about 0.3%
     uint fee = ((amount * 3) / 997) + 1;
     uint amountToRepay = amount + fee;
 
