@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity ^0.8.1;
+pragma solidity ^0.8;
 pragma experimental ABIEncoderV2;
 
 library Account {
-  enum Status {Normal, Liquid, Vapor}
+  enum Status {
+    Normal,
+    Liquid,
+    Vapor
+  }
   struct Info {
     address owner; // The address that owns the account
     uint number; // A nonce that allows a single address to control many accounts
@@ -27,9 +31,17 @@ library Actions {
     Call // send arbitrary data to an address
   }
 
-  enum AccountLayout {OnePrimary, TwoPrimary, PrimaryAndSecondary}
+  enum AccountLayout {
+    OnePrimary,
+    TwoPrimary,
+    PrimaryAndSecondary
+  }
 
-  enum MarketLayout {ZeroMarkets, OneMarket, TwoMarkets}
+  enum MarketLayout {
+    ZeroMarkets,
+    OneMarket,
+    TwoMarkets
+  }
 
   struct ActionArgs {
     ActionType actionType;
