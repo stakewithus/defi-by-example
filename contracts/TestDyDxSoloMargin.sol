@@ -10,8 +10,8 @@ contract TestDyDxSoloMargin is ICallee, DydxFlashloanBase {
 
   // JUST FOR TESTING - ITS OKAY TO REMOVE ALL OF THESE VARS
   address public flashUser;
-  address public tokenBorrow;
-  uint public repayAmount;
+
+  event Log(string message, uint val);
 
   struct MyCustomData {
     address token;
@@ -31,8 +31,8 @@ contract TestDyDxSoloMargin is ICallee, DydxFlashloanBase {
     uint marketId = _getMarketIdFromTokenAddress(SOLO, _token);
 
     // Calculate repay amount (_amount + (2 wei))
-    uint _repayAmount = _getRepaymentAmountInternal(_amount);
-    IERC20(_token).approve(SOLO, _repayAmount);
+    uint repayAmount = _getRepaymentAmountInternal(_amount);
+    IERC20(_token).approve(SOLO, repayAmount);
 
     /*
     1. Withdraw
@@ -44,7 +44,7 @@ contract TestDyDxSoloMargin is ICallee, DydxFlashloanBase {
 
     operations[0] = _getWithdrawAction(marketId, _amount);
     operations[1] = _getCallAction(
-      abi.encode(MyCustomData({token: _token, repayAmount: _repayAmount}))
+      abi.encode(MyCustomData({token: _token, repayAmount: repayAmount}))
     );
     operations[2] = _getDepositAction(marketId, repayAmount);
 
@@ -63,15 +63,16 @@ contract TestDyDxSoloMargin is ICallee, DydxFlashloanBase {
     require(sender == address(this), "!this contract");
 
     MyCustomData memory mcd = abi.decode(data, (MyCustomData));
+    uint repayAmount = mcd.repayAmount;
 
     uint bal = IERC20(mcd.token).balanceOf(address(this));
-    require(bal >= mcd.repayAmount, "bal < repay");
+    require(bal >= repayAmount, "bal < repay");
 
     // More code here...
-
     flashUser = sender;
-    tokenBorrow = mcd.token;
-    repayAmount = mcd.repayAmount;
+    emit Log("bal", bal);
+    emit Log("repay", repayAmount);
+    emit Log("bal - repay", bal - repayAmount);
   }
 }
 // Solo margin contract mainnet - 0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e
