@@ -24,6 +24,7 @@
     "truffle": "^5.3.14"
   },
   "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.12",
     "bn.js": "^5.2.0",
     "eslint": "^7.30.0",
     "prettier": "^2.3.1",
