@@ -51,7 +51,7 @@ contract("TestCompoundEth", (accounts) => {
     console.log(`exchange rate ${after.exchangeRate}`)
     console.log(`supply rate ${after.supplyRate}`)
     console.log(`estimate balance ${after.estimateBalance}`)
-    console.log(`balance of undelrying ${after.balanceOfUnderlying}`)
+    console.log(`balance of underlying ${after.balanceOfUnderlying}`)
     console.log(`eth balance ${after.eth}`)
     console.log(`c token balance ${after.cToken}`)
 
@@ -62,7 +62,7 @@ contract("TestCompoundEth", (accounts) => {
     after = await snapshot(testCompound, web3, cToken)
 
     console.log(`--- after some blocks... ---`)
-    console.log(`balance of undelrying ${after.balanceOfUnderlying}`)
+    console.log(`balance of underlying ${after.balanceOfUnderlying}`)
 
     // test redeem
     const cTokenAmount = await cToken.balanceOf(testCompound.address)
@@ -73,7 +73,7 @@ contract("TestCompoundEth", (accounts) => {
     after = await snapshot(testCompound, web3, cToken)
 
     console.log(`--- redeem ---`)
-    console.log(`balance of undelrying ${after.balanceOfUnderlying}`)
+    console.log(`balance of underlying ${after.balanceOfUnderlying}`)
     console.log(`eth balance ${after.eth}`)
     console.log(`c token balance ${after.cToken}`)
   })
