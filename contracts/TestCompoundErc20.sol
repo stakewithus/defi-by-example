@@ -13,6 +13,8 @@ contract TestCompoundErc20 {
   IERC20 public token;
   CErc20 public cToken;
 
+  event Log(string message, uint val);
+
   constructor(address _token, address _cToken) {
     token = IERC20(_token);
     cToken = CErc20(_cToken);
@@ -90,12 +92,12 @@ contract TestCompoundErc20 {
 
   // open price feed - USD price of token to borrow
   function getPriceFeed(address _cToken) external view returns (uint) {
-    // scaled up by 1e18 + supply token decimals + 2 (USD has 2 decimals)
+    // scaled up by 1e18
     return priceFeed.getUnderlyingPrice(_cToken);
   }
 
   // enter market and borrow
-  function borrow(address _cTokenToBorrow) external {
+  function borrow(address _cTokenToBorrow, uint _decimals) external {
     // enter market
     // enter the supply market so you can borrow another type of asset
     address[] memory cTokens = new address[](1);
@@ -115,20 +117,21 @@ contract TestCompoundErc20 {
 
     // calculate max borrow
     uint price = priceFeed.getUnderlyingPrice(_cTokenToBorrow);
-    // liquidity - scaled up by 1e18
-    // price - scaled up by 1e18 + token decimals + 2 (USD has 2 decimals)
-    // uint maxBorrow = ((liquidity * 1e18) / price);
-    // require(maxBorrow > 0, "max borrow = 0");
-    uint maxBorrow = 100 * 1e18;
 
-    // borrow
+    // liquidity - USD scaled up by 1e18
+    // price - USD scaled up by 1e18
+    // decimals - decimals of token to borrow
+    uint maxBorrow = (liquidity * (10**_decimals)) / price;
+    require(maxBorrow > 0, "max borrow = 0");
+
+    // borrow 50% of max borrow
     uint amount = (maxBorrow * 50) / 100;
     require(CErc20(_cTokenToBorrow).borrow(amount) == 0, "borrow failed");
   }
 
   // borrowed balance (includes interest)
   // not view function
-  function getBorrowedBalance(address _cTokenBorrowed) external returns (uint) {
+  function getBorrowedBalance(address _cTokenBorrowed) public returns (uint) {
     return CErc20(_cTokenBorrowed).borrowBalanceCurrent(address(this));
   }
 

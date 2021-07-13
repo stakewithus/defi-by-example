@@ -50,87 +50,81 @@ contract("TestCompoundErc20", (accounts) => {
     const colFactor = await testCompound.getCollateralFactor()
     const supplied = await testCompound.balanceOfUnderlying.call()
     const price = await testCompound.getPriceFeed(C_TOKEN_TO_BORROW)
-    const estimateLiquidity = supplied
-      .mul(price)
-      .mul(colFactor)
-      .div(pow(10, SUPPLY_DECIMALS + 18 + SUPPLY_DECIMALS + 2 + 18))
-    const maxBorrow = liquidity.mul(pow(10, 18 + BORROW_DECIMALS + 2)).div(price)
-
+    const maxBorrow = liquidity.div(price)
     const borrowedBalance = await testCompound.getBorrowedBalance.call(C_TOKEN_TO_BORROW)
-    const tokenBal = await tokenToBorrow.balanceOf(testCompound.address)
-    const borrowRate = await testCompound.getBorrowedBalance.call(C_TOKEN_TO_BORROW)
+    const tokenToBorrowBal = await tokenToBorrow.balanceOf(testCompound.address)
+    const borrowRate = await testCompound.getBorrowRatePerBlock.call(C_TOKEN_TO_BORROW)
 
     return {
       colFactor: colFactor.div(pow(10, 18 - 2)) / 100,
       supplied: supplied.div(pow(10, SUPPLY_DECIMALS - 2)) / 100,
-      price: price.div(pow(10, 18 + SUPPLY_DECIMALS + 2)),
-      // TODO: why is this 0?
+      price: price.div(pow(10, 18 - 2)) / 100,
       liquidity: liquidity.div(pow(10, 18)),
-      estimateLiquidity,
       maxBorrow: maxBorrow,
-      borrowedBalance: borrowedBalance.div(pow(10, BORROW_DECIMALS)),
-      tokenToBorrow: tokenBal.div(pow(10, BORROW_DECIMALS)),
-      borrowRate: borrowRate.div(pow(10, 18 - 2)) / 100,
+      borrowedBalance: borrowedBalance.div(pow(10, BORROW_DECIMALS - 2)) / 100,
+      tokenToBorrowBal: tokenToBorrowBal.div(pow(10, BORROW_DECIMALS - 2)) / 100,
+      borrowRate,
     }
   }
 
   it("should supply, borrow and repay", async () => {
+    // used for debugging
+    let tx
+    let snap
+
     // supply
     await token.approve(testCompound.address, SUPPLY_AMOUNT, { from: WHALE })
-    await testCompound.supply(SUPPLY_AMOUNT, {
+    tx = await testCompound.supply(SUPPLY_AMOUNT, {
       from: WHALE,
     })
 
     // borrow
-
-    before = await snapshot(testCompound, tokenToBorrow)
+    snap = await snapshot(testCompound, tokenToBorrow)
     console.log(`--- borrow (before) ---`)
-    console.log(`col factor: ${before.colFactor} %`)
-    console.log(`supplied: ${before.supplied}`)
-    console.log(`liquidity: $ ${before.liquidity}`)
-    console.log(`estimate liquidity: $ ${before.estimateLiquidity}`)
-    console.log(`price: $ ${before.price}`)
-    console.log(`max borrow: ${before.maxBorrow}`)
-    console.log(`borrowed balance (compound): ${before.borrowedBalance}`)
-    console.log(`borrowed balance (erc20): ${before.tokenToBorrow}`)
-    console.log(`borrow rate: ${before.borrowRate}`)
+    console.log(`col factor: ${snap.colFactor} %`)
+    console.log(`supplied: ${snap.supplied}`)
+    console.log(`liquidity: $ ${snap.liquidity}`)
+    console.log(`price: $ ${snap.price}`)
+    console.log(`max borrow: ${snap.maxBorrow}`)
+    console.log(`borrowed balance (compound): ${snap.borrowedBalance}`)
+    console.log(`borrowed balance (erc20): ${snap.tokenToBorrowBal}`)
+    console.log(`borrow rate: ${snap.borrowRate}`)
 
-    testCompound.borrow(C_TOKEN_TO_BORROW, { from: WHALE })
+    tx = await testCompound.borrow(C_TOKEN_TO_BORROW, BORROW_DECIMALS, { from: WHALE })
+    // for (const log of tx.logs) {
+    //   console.log(log.event, log.args.message, log.args.val.toString())
+    // }
 
-    after = await snapshot(testCompound, tokenToBorrow)
+    snap = await snapshot(testCompound, tokenToBorrow)
     console.log(`--- borrow (after) ---`)
-    console.log(`liquidity: $ ${after.liquidity}`)
-    console.log(`estimate liquidity: $ ${after.estimateLiquidity}`)
-    console.log(`max borrow: ${after.maxBorrow}`)
-    console.log(`borrowed balance (compound): ${before.borrowedBalance}`)
-    console.log(`borrowed balance (erc20): ${before.tokenToBorrow}`)
-    console.log(`borrow rate: ${after.borrowRate}`)
+    console.log(`liquidity: $ ${snap.liquidity}`)
+    console.log(`max borrow: ${snap.maxBorrow}`)
+    console.log(`borrowed balance (compound): ${snap.borrowedBalance}`)
+    console.log(`borrowed balance (erc20): ${snap.tokenToBorrowBal}`)
 
     // accrue interest on borrow
     const block = await web3.eth.getBlockNumber()
     await time.advanceBlockTo(block + 100)
 
-    after = await snapshot(testCompound, cTokenToBorrow)
+    snap = await snapshot(testCompound, tokenToBorrow)
     console.log(`--- after some blocks... ---`)
-    console.log(`liquidity: $ ${after.liquidity}`)
-    console.log(`estimate liquidity: $ ${after.estimateLiquidity}`)
-    console.log(`max borrow: ${after.maxBorrow}`)
-    console.log(`borrowed balance (compound): ${before.borrowedBalance}`)
-    console.log(`borrowed balance (erc20): ${before.tokenToBorrow}`)
+    console.log(`liquidity: $ ${snap.liquidity}`)
+    console.log(`max borrow: ${snap.maxBorrow}`)
+    console.log(`borrowed balance (compound): ${snap.borrowedBalance}`)
+    console.log(`borrowed balance (erc20): ${snap.tokenToBorrowBal}`)
 
     // repay
-    tokenToBorrow.transfer(testCompound.address, BORROW_INTEREST, { from: REPAY_WHALE })
+    await tokenToBorrow.transfer(testCompound.address, BORROW_INTEREST, { from: REPAY_WHALE })
     const MAX_UINT = pow(2, 256).sub(new BN(1))
     tx = await testCompound.repay(TOKEN_TO_BORROW, C_TOKEN_TO_BORROW, MAX_UINT, {
       from: REPAY_WHALE,
     })
 
-    after = await snapshot(testCompound, cTokenToBorrow)
-
+    snap = await snapshot(testCompound, tokenToBorrow)
     console.log(`--- repay ---`)
-    console.log(`liquidity: $ ${after.liquidity}`)
-    console.log(`estimate liquidity: $ ${after.estimateLiquidity}`)
-    console.log(`max borrow: ${after.maxBorrow}`)
-    console.log(`borrow balance: ${after.borrowedBalance}`)
+    console.log(`liquidity: $ ${snap.liquidity}`)
+    console.log(`max borrow: ${snap.maxBorrow}`)
+    console.log(`borrowed balance (compound): ${snap.borrowedBalance}`)
+    console.log(`borrowed balance (erc20): ${snap.tokenToBorrowBal}`)
   })
 })
