@@ -151,6 +151,4 @@ contract TestCompoundErc20 {
     // _amount = 2 **256 - 1 means repay all
     require(CErc20(_cTokenBorrowed).repayBorrow(_amount) == 0, "repay failed");
   }
-
-  // TODO: liquidation ?
 }
