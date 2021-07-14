@@ -60,7 +60,7 @@ contract("TestCompoundErc20", (accounts) => {
       supplied: supplied.div(pow(10, SUPPLY_DECIMALS - 2)) / 100,
       price: price.div(pow(10, 18 - 2)) / 100,
       liquidity: liquidity.div(pow(10, 18)),
-      maxBorrow: maxBorrow,
+      maxBorrow,
       borrowedBalance: borrowedBalance.div(pow(10, BORROW_DECIMALS - 2)) / 100,
       tokenToBorrowBal: tokenToBorrowBal.div(pow(10, BORROW_DECIMALS - 2)) / 100,
       borrowRate,

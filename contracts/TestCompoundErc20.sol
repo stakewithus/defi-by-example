@@ -84,9 +84,9 @@ contract TestCompoundErc20 {
       address(this)
     );
     require(error == 0, "error");
-    // shortfall > 0 is subject to liquidation, you borrowed over limit
-    // liquidity == 0 means account has excess collateral
     // normal circumstance - liquidity > 0 and shortfall == 0
+    // liquidity > 0 means account can borrow up to `liquidity`
+    // shortfall > 0 is subject to liquidation, you borrowed over limit
     return (_liquidity, _shortfall);
   }
 
@@ -112,8 +112,6 @@ contract TestCompoundErc20 {
     require(error == 0, "error");
     require(shortfall == 0, "shortfall > 0");
     require(liquidity > 0, "liquidity = 0");
-    // we're going to supply single token so
-    // liquidity should be close to supplied balance * supplied price * colFactor
 
     // calculate max borrow
     uint price = priceFeed.getUnderlyingPrice(_cTokenToBorrow);
@@ -148,7 +146,7 @@ contract TestCompoundErc20 {
     uint _amount
   ) external {
     IERC20(_tokenBorrowed).approve(_cTokenBorrowed, _amount);
-    // _amount = 2 **256 - 1 means repay all
+    // _amount = 2 ** 256 - 1 means repay all
     require(CErc20(_cTokenBorrowed).repayBorrow(_amount) == 0, "repay failed");
   }
 }
