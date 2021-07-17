@@ -23,6 +23,12 @@ interface CErc20 {
   function borrowRatePerBlock() external view returns (uint);
 
   function repayBorrow(uint) external returns (uint);
+
+  function liquidateBorrow(
+    address borrower,
+    uint amount,
+    address collateral
+  ) external returns (uint);
 }
 
 interface CEth {
@@ -69,6 +75,10 @@ interface Comptroller {
       uint,
       uint
     );
+
+  function closeFactorMantissa() external view returns (uint);
+
+  function liquidationIncentiveMantissa() external view returns (uint);
 }
 
 interface PriceFeed {
