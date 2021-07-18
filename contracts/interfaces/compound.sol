@@ -79,6 +79,12 @@ interface Comptroller {
   function closeFactorMantissa() external view returns (uint);
 
   function liquidationIncentiveMantissa() external view returns (uint);
+
+  function liquidateCalculateSeizeTokens(
+    address cTokenBorrowed,
+    address cTokenCollateral,
+    uint actualRepayAmount
+  ) external view returns (uint, uint);
 }
 
 interface PriceFeed {

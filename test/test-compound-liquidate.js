@@ -52,6 +52,7 @@ contract("TestCompoundLiquidate", (accounts) => {
     const price = await testCompound.getPriceFeed(C_TOKEN_BORROW)
     const closeFactor = await liquidator.getCloseFactor()
     const incentive = await liquidator.getLiquidationIncentive()
+    const liquidated = await liquidator.getSupplyBalance.call(C_TOKEN_SUPPLY)
 
     return {
       colFactor: colFactor.div(pow(10, 18 - 2)),
@@ -61,9 +62,8 @@ contract("TestCompoundLiquidate", (accounts) => {
       liquidity: liquidity.div(pow(10, 14)) / 10000,
       shortfall: shortfall.div(pow(10, 14)) / 10000,
       closeFactor: closeFactor.div(pow(10, 18 - 2)),
-      incentive: incentive.div(pow(10, 18 - 2)),
-      // liquidity,
-      // shortfall,
+      incentive: incentive.div(pow(10, 18 - 2)) / 100,
+      liquidated: liquidated.div(pow(10, SUPPLY_DECIMALS - 4)) / 10000,
     }
   }
 
@@ -91,7 +91,7 @@ contract("TestCompoundLiquidate", (accounts) => {
     const price = await testCompound.getPriceFeed(C_TOKEN_BORROW)
     const maxBorrow = liquidity.mul(pow(10, BORROW_DECIMALS)).div(price)
     // NOTE: tweak borrow amount if borrow fails
-    const borrowAmount = maxBorrow.mul(new BN(9998)).div(new BN(10000))
+    const borrowAmount = maxBorrow.mul(new BN(9997)).div(new BN(10000))
 
     console.log(`--- entered market ---`)
     console.log(`liquidity: $ ${liquidity.div(pow(10, 18))}`)
@@ -108,7 +108,8 @@ contract("TestCompoundLiquidate", (accounts) => {
 
     // accrue interest on borrow
     const block = await web3.eth.getBlockNumber()
-    await time.advanceBlockTo(block + 1000)
+    // NOTE: tweak this to increase borrowed amount
+    await time.advanceBlockTo(block + 10000)
 
     // send any tx to Compound to update liquidity and shortfall
     await testCompound.getBorrowBalance()
@@ -120,11 +121,17 @@ contract("TestCompoundLiquidate", (accounts) => {
     console.log(`borrowed: ${snap.borrowed}`)
 
     // liquidate
-    const repayAmount = (await testCompound.getBorrowBalance.call()).mul(new BN(50)).div(new BN(100))
+    const closeFactor = await liquidator.getCloseFactor()
+    const repayAmount = (await testCompound.getBorrowBalance.call()).mul(closeFactor).div(pow(10, 18))
 
     const liqBal = await tokenBorrow.balanceOf(LIQUIDATOR)
     console.log(`liquidator balance: ${liqBal.div(pow(10, BORROW_DECIMALS))}`)
     assert(liqBal.gte(repayAmount), "bal < repay")
+
+    const amountToBeLiquidated = await liquidator.getAmountToBeLiquidated(C_TOKEN_BORROW, C_TOKEN_SUPPLY, repayAmount)
+    console.log(
+      `amount to be liquidated (cToken collateral):  ${amountToBeLiquidated.div(pow(10, SUPPLY_DECIMALS - 2)) / 100}`
+    )
 
     await tokenBorrow.approve(liquidator.address, repayAmount, { from: LIQUIDATOR })
     tx = await liquidator.liquidate(testCompound.address, repayAmount, C_TOKEN_SUPPLY, {
@@ -134,10 +141,19 @@ contract("TestCompoundLiquidate", (accounts) => {
     snap = await snapshot(testCompound, liquidator)
     console.log(`--- liquidated ---`)
     console.log(`close factor: ${snap.closeFactor} %`)
-    console.log(`liquidation incentive: ${snap.incentive} %`)
+    console.log(`liquidation incentive: ${snap.incentive}`)
     console.log(`supplied: ${snap.supplied}`)
     console.log(`liquidity: $ ${snap.liquidity}`)
     console.log(`shortfall: $ ${snap.shortfall}`)
     console.log(`borrowed: ${snap.borrowed}`)
+    console.log(`liquidated: ${snap.liquidated}`)
+
+    /* memo
+    c = 31572
+    r = c * 0.65 * 0.5
+    b = 1
+    i = 1.08
+    r * i * b / c
+    */
   })
 })
