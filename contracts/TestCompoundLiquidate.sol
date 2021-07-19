@@ -110,7 +110,7 @@ contract CompoundLiquidator {
     return comptroller.liquidationIncentiveMantissa();
   }
 
-  // get amount to collateral to be liquidated
+  // get amount of collateral to be liquidated
   function getAmountToBeLiquidated(
     address _cTokenBorrowed,
     address _cTokenCollateral,
