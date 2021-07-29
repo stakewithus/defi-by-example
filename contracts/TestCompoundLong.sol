@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./interfaces/compound.sol";
-import "./interfaces/Uniswap.sol";
-
-/*
+/* Long ETH
 1. supply ETH
 2. borrow stable coin (DAI, USDC)
 3. buy ETH on Uniswap
@@ -14,6 +10,10 @@ when the price of ETH goes up...
 4. sell ETH on Uniswap
 5. repay borrowed stable coin
 */
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./interfaces/compound.sol";
+import "./interfaces/Uniswap.sol";
 
 contract TestCompoundLong {
   CEth public cEth;
@@ -82,8 +82,8 @@ contract TestCompoundLong {
     UNI.swapExactTokensForETH(bal, 1, path, address(this), block.timestamp);
   }
 
-  function repay() external payable {
-    // sell ETH (borrowed balance)
+  function repay() external {
+    // sell ETH
     address[] memory path = new address[](2);
     path[0] = address(WETH);
     path[1] = address(tokenBorrow);
@@ -93,7 +93,7 @@ contract TestCompoundLong {
       address(this),
       block.timestamp
     );
-
+    // repay borrow
     uint borrowed = cTokenBorrow.borrowBalanceCurrent(address(this));
     tokenBorrow.approve(address(cTokenBorrow), borrowed);
     require(cTokenBorrow.repayBorrow(borrowed) == 0, "repay failed");
@@ -101,7 +101,7 @@ contract TestCompoundLong {
     uint supplied = cEth.balanceOfUnderlying(address(this));
     require(cEth.redeemUnderlying(supplied) == 0, "redeem failed");
 
-    // supplied ETH + profit (in token borrow)
+    // supplied ETH + supplied interest + profit (in token borrow)
   }
 
   // not view function

@@ -6,7 +6,6 @@ const { DAI, DAI_WHALE, CDAI, WBTC, WBTC_WHALE, CWBTC, CETH } = require("./confi
 const { web3 } = require("@openzeppelin/test-helpers/src/setup")
 
 const IERC20 = artifacts.require("IERC20")
-const CErc20 = artifacts.require("CErc20")
 const TestCompoundLong = artifacts.require("TestCompoundLong")
 
 contract("TestCompoundLong", (accounts) => {
@@ -84,7 +83,6 @@ contract("TestCompoundLong", (accounts) => {
 
     // repay
     await tokenBorrow.transfer(testCompound.address, BORROW_INTEREST, { from: REPAY_WHALE })
-    const MAX_UINT = pow(2, 256).sub(new BN(1))
     tx = await testCompound.repay({
       from: ETH_WHALE,
     })
