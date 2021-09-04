@@ -57,7 +57,7 @@ ganache-cli \
 --unlock $WBTC_WHALE \
 --networkId 999
 
-npx truffle test --network mainnet_fork test/test-erc20.js
-npx truffle test --network mainnet_fork test/test-dydx.js
+env $(cat .env) npx truffle test --network mainnet_fork test/test-erc20.js
+env $(cat .env) npx truffle test --network mainnet_fork test/test-dydx.js
 
 ```
