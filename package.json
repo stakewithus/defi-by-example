@@ -19,15 +19,15 @@
   },
   "homepage": "https://github.com/t4sk/defi#readme",
   "dependencies": {
-    "@openzeppelin/contracts": "^4.2.0",
+    "@openzeppelin/contracts": "^4.3.2",
     "ganache-cli": "^6.12.2",
-    "truffle": "^5.3.14"
+    "truffle": "^5.4.16"
   },
   "devDependencies": {
-    "@openzeppelin/test-helpers": "^0.5.12",
+    "@openzeppelin/test-helpers": "^0.5.15",
     "bn.js": "^5.2.0",
-    "eslint": "^7.30.0",
-    "prettier": "^2.3.1",
-    "prettier-plugin-solidity": "^1.0.0-beta.13"
+    "eslint": "^8.1.0",
+    "prettier": "^2.4.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.18"
   }
 }
