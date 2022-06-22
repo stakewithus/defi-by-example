@@ -13,9 +13,11 @@ npx hardhat test test/swap.test.js
 
 [Deployed Contract Addresses](https://docs.uniswap.org/protocol/reference/deployments)
 
+[Uniswap V3 Pool Infos](https://info.uniswap.org/#/pools)
+
 # TODO
 
-- [ ] multi hop
+- [x] multi hop
 - [ ] add / remove liquidity
-- [ ] flash swap
+- [ ] flash swap?
 - [ ] liquidity mining?

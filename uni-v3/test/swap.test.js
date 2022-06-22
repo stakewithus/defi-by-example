@@ -10,6 +10,7 @@ describe("SwapExamples", () => {
   let accounts
   let weth
   let dai
+  let usdc
 
   before(async () => {
     accounts = await ethers.getSigners(1)
@@ -20,6 +21,7 @@ describe("SwapExamples", () => {
 
     weth = await ethers.getContractAt("IWETH", WETH9)
     dai = await ethers.getContractAt("IERC20", DAI)
+    usdc = await ethers.getContractAt("IERC20", USDC)
   })
 
   it("swapExactInputSingle", async () => {
@@ -45,6 +47,33 @@ describe("SwapExamples", () => {
 
     // Swap
     await swapExamples.swapExactOutputSingle(daiAmountOut, wethAmountInMax)
+
+    console.log("DAI balance", await dai.balanceOf(accounts[0].address))
+  })
+
+  it("swapExactInputMultihop", async () => {
+    const amountIn = 10n ** 18n
+
+    // Deposit WETH
+    await weth.deposit({ value: amountIn })
+    await weth.approve(swapExamples.address, amountIn)
+
+    // Swap
+    await swapExamples.swapExactInputMultihop(amountIn)
+
+    console.log("DAI balance", await dai.balanceOf(accounts[0].address))
+  })
+
+  it("swapExactOutputMultihop", async () => {
+    const wethAmountInMax = 10n ** 18n
+    const daiAmountOut = 100n * 10n ** 18n
+
+    // Deposit WETH
+    await weth.deposit({ value: wethAmountInMax })
+    await weth.approve(swapExamples.address, wethAmountInMax)
+
+    // Swap
+    await swapExamples.swapExactOutputMultihop(daiAmountOut, wethAmountInMax)
 
     console.log("DAI balance", await dai.balanceOf(accounts[0].address))
   })
