@@ -17,7 +17,8 @@ npx hardhat test test/swap.test.js
 
 # TODO
 
-- [x] multi hop
+- [x] single hop swap
+- [x] multi hop swap
 - [ ] add / remove liquidity
 - [ ] flash swap?
 - [ ] liquidity mining?
