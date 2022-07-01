@@ -31,7 +31,6 @@ contract LiquidityExamples is IERC721Receiver {
     /// @dev deposits[tokenId] => Deposit
     mapping(uint => Deposit) public deposits;
 
-    // TODO: when is this called?
     // Implementing `onERC721Received` so this contract can receive custody of erc721 tokens
     function onERC721Received(
         address operator,
@@ -109,7 +108,9 @@ contract LiquidityExamples is IERC721Receiver {
                 token0: DAI,
                 token1: USDC,
                 fee: poolFee,
-                // TODO: what is ticks?
+                // By using TickMath.MIN_TICK and TickMath.MAX_TICK, 
+                // we are providing liquidity across the whole range of the pool. 
+                // Not recommended in production.
                 tickLower: TickMath.MIN_TICK,
                 tickUpper: TickMath.MAX_TICK,
                 amount0Desired: amount0ToMint,
