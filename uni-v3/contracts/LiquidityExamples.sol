@@ -31,18 +31,21 @@ contract LiquidityExamples is IERC721Receiver {
     /// @dev deposits[tokenId] => Deposit
     mapping(uint => Deposit) public deposits;
 
+    // Store token id used in this example
+    uint public tokenId;
+
     // Implementing `onERC721Received` so this contract can receive custody of erc721 tokens
     function onERC721Received(
         address operator,
         address,
-        uint tokenId,
+        uint _tokenId,
         bytes calldata
     ) external override returns (bytes4) {
-        _createDeposit(operator, tokenId);
+        _createDeposit(operator, _tokenId);
         return this.onERC721Received.selector;
     }
 
-    function _createDeposit(address owner, uint tokenId) internal {
+    function _createDeposit(address owner, uint _tokenId) internal {
         (
             ,
             ,
@@ -56,31 +59,26 @@ contract LiquidityExamples is IERC721Receiver {
             ,
             ,
 
-        ) = nonfungiblePositionManager.positions(tokenId);
+        ) = nonfungiblePositionManager.positions(_tokenId);
         // set the owner and data for position
         // operator is msg.sender
-        deposits[tokenId] = Deposit({
+        deposits[_tokenId] = Deposit({
             owner: owner,
             liquidity: liquidity,
             token0: token0,
             token1: token1
         });
 
-        console.log("Token id", tokenId);
+        console.log("Token id", _tokenId);
         console.log("Liquidity", liquidity);
+
+        tokenId = _tokenId;
     }
 
-    /// @notice Calls the mint function defined in periphery,
-    /// mints the same amount of each token.
-    /// For this example we are providing 1000 DAI and 1000 USDC in liquidity
-    /// @return tokenId The id of the newly minted ERC721
-    /// @return liquidity The amount of liquidity for the position
-    /// @return amount0 The amount of token0
-    /// @return amount1 The amount of token1
     function mintNewPosition()
         external
         returns (
-            uint tokenId,
+            uint _tokenId,
             uint128 liquidity,
             uint amount0,
             uint amount1
@@ -123,11 +121,11 @@ contract LiquidityExamples is IERC721Receiver {
 
         // Note that the pool defined by DAI/USDC and fee tier 0.01% must 
         // already be created and initialized in order to mint
-        (tokenId, liquidity, amount0, amount1) = nonfungiblePositionManager
+        (_tokenId, liquidity, amount0, amount1) = nonfungiblePositionManager
             .mint(params);
 
         // Create a deposit
-        _createDeposit(msg.sender, tokenId);
+        _createDeposit(msg.sender, _tokenId);
 
         // Remove allowance and refund in both assets.
         if (amount0 < amount0ToMint) {
@@ -149,5 +147,22 @@ contract LiquidityExamples is IERC721Receiver {
             uint refund1 = amount1ToMint - amount1;
             TransferHelper.safeTransfer(USDC, msg.sender, refund1);
         }
+    }
+
+    function collectAllFees() external returns (uint256 amount0, uint256 amount1) {
+        // set amount0Max and amount1Max to uint256.max to collect all fees
+        // alternatively can set recipient to msg.sender and avoid another transaction in `sendToOwner`
+        INonfungiblePositionManager.CollectParams memory params =
+            INonfungiblePositionManager.CollectParams({
+                tokenId: tokenId,
+                recipient: address(this),
+                amount0Max: type(uint128).max,
+                amount1Max: type(uint128).max
+            });
+
+        (amount0, amount1) = nonfungiblePositionManager.collect(params);
+
+        console.log("fee 0", amount0);
+        console.log("fee 1", amount1);
     }
 }

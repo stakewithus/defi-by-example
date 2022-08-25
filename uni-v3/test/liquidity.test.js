@@ -70,4 +70,11 @@ describe("LiquidityExamples", () => {
       await usdc.balanceOf(accounts[0].address)
     )
   })
+
+  it("collectAllFees", async () => {
+    const tokenId = await liquidityExamples.tokenId()
+    console.log(`token id ${tokenId}`)
+
+    await liquidityExamples.collectAllFees()
+  })
 })
