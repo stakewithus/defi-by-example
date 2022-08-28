@@ -4,3 +4,5 @@ build
 venv
 .env
 tmp
+cache
+out
