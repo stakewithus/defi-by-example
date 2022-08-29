@@ -165,4 +165,26 @@ contract LiquidityExamples is IERC721Receiver {
         console.log("fee 0", amount0);
         console.log("fee 1", amount1);
     }
+
+    function decreaseLiquidityInHalf() external returns (uint amount0, uint amount1) {
+        uint128 liquidity = deposits[tokenId].liquidity;
+        uint128 halfLiquidity = liquidity / 2;
+
+        // amount0Min and amount1Min are price slippage checks
+        // if the amount received after burning is not greater than these minimums, transaction will fail
+        INonfungiblePositionManager.DecreaseLiquidityParams memory params =
+            INonfungiblePositionManager.DecreaseLiquidityParams({
+                tokenId: tokenId,
+                liquidity: halfLiquidity,
+                amount0Min: 0,
+                amount1Min: 0,
+                deadline: block.timestamp
+            });
+
+        (amount0, amount1) = nonfungiblePositionManager.decreaseLiquidity(params);
+
+        console.log("liquidity", liquidity);
+        console.log("amount 0", amount0);
+        console.log("amount 1", amount1);
+    }
 }

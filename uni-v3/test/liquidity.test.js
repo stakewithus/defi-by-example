@@ -71,10 +71,14 @@ describe("LiquidityExamples", () => {
     )
   })
 
-  it("collectAllFees", async () => {
+  it.skip("collectAllFees", async () => {
     const tokenId = await liquidityExamples.tokenId()
     console.log(`token id ${tokenId}`)
 
     await liquidityExamples.collectAllFees()
+  })
+
+  it("decreaseLiquidityInHalf", async () => {
+    await liquidityExamples.decreaseLiquidityInHalf()
   })
 })
