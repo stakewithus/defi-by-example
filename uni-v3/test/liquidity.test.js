@@ -38,8 +38,8 @@ describe("LiquidityExamples", () => {
     const usdcWhale = await ethers.getSigner(USDC_WHALE)
 
     // Send DAI and USDC to accounts[0]
-    const daiAmount = 100n * 10n ** 18n
-    const usdcAmount = 100n * 10n ** 6n
+    const daiAmount = 1000n * 10n ** 18n
+    const usdcAmount = 1000n * 10n ** 6n
 
     expect(await dai.balanceOf(daiWhale.address)).to.gte(daiAmount)
     expect(await usdc.balanceOf(usdcWhale.address)).to.gte(usdcAmount)
@@ -71,7 +71,7 @@ describe("LiquidityExamples", () => {
     )
   })
 
-  it.skip("collectAllFees", async () => {
+  it("collectAllFees", async () => {
     const tokenId = await liquidityExamples.tokenId()
     console.log(`token id ${tokenId}`)
 
@@ -80,5 +80,17 @@ describe("LiquidityExamples", () => {
 
   it("decreaseLiquidityInHalf", async () => {
     await liquidityExamples.decreaseLiquidityInHalf()
+  })
+
+  it("increaseLiquidityCurrentRange", async () => {
+    const daiAmount = 20n * 10n ** 18n
+    const usdcAmount = 20n * 10n ** 6n
+
+    await dai.connect(accounts[0]).approve(liquidityExamples.address, daiAmount)
+    await usdc
+      .connect(accounts[0])
+      .approve(liquidityExamples.address, usdcAmount)
+
+    await liquidityExamples.increaseLiquidityCurrentRange(daiAmount, usdcAmount)
   })
 })
