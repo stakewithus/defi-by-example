@@ -71,18 +71,7 @@ describe("LiquidityExamples", () => {
     )
   })
 
-  it("collectAllFees", async () => {
-    const tokenId = await liquidityExamples.tokenId()
-    console.log(`token id ${tokenId}`)
-
-    await liquidityExamples.collectAllFees()
-  })
-
-  it("decreaseLiquidityInHalf", async () => {
-    await liquidityExamples.decreaseLiquidityInHalf()
-  })
-
-  it("increaseLiquidityCurrentRange", async () => {
+  it.skip("increaseLiquidityCurrentRange", async () => {
     const daiAmount = 20n * 10n ** 18n
     const usdcAmount = 20n * 10n ** 6n
 
@@ -92,5 +81,25 @@ describe("LiquidityExamples", () => {
       .approve(liquidityExamples.address, usdcAmount)
 
     await liquidityExamples.increaseLiquidityCurrentRange(daiAmount, usdcAmount)
+  })
+
+  it("decreaseLiquidity", async () => {
+    const tokenId = await liquidityExamples.tokenId()
+    const liquidity = await liquidityExamples.getLiquidity(tokenId)
+
+    await liquidityExamples.decreaseLiquidity(liquidity)
+
+    console.log("--- decrease liquidity ---")
+    console.log(`liquidity ${liquidity}`)
+    console.log(`dai ${await dai.balanceOf(liquidityExamples.address)}`)
+    console.log(`usdc ${await usdc.balanceOf(liquidityExamples.address)}`)
+  })
+
+  it("collectAllFees", async () => {
+    await liquidityExamples.collectAllFees()
+
+    console.log("--- collect fees ---")
+    console.log(`dai ${await dai.balanceOf(liquidityExamples.address)}`)
+    console.log(`usdc ${await usdc.balanceOf(liquidityExamples.address)}`)
   })
 })

@@ -166,28 +166,6 @@ contract LiquidityExamples is IERC721Receiver {
         console.log("fee 1", amount1);
     }
 
-    function decreaseLiquidityInHalf() external returns (uint amount0, uint amount1) {
-        uint128 liquidity = deposits[tokenId].liquidity;
-        uint128 halfLiquidity = liquidity / 2;
-
-        // amount0Min and amount1Min are price slippage checks
-        // if the amount received after burning is not greater than these minimums, transaction will fail
-        INonfungiblePositionManager.DecreaseLiquidityParams memory params =
-            INonfungiblePositionManager.DecreaseLiquidityParams({
-                tokenId: tokenId,
-                liquidity: halfLiquidity,
-                amount0Min: 0,
-                amount1Min: 0,
-                deadline: block.timestamp
-            });
-
-        (amount0, amount1) = nonfungiblePositionManager.decreaseLiquidity(params);
-
-        console.log("liquidity", liquidity);
-        console.log("amount 0", amount0);
-        console.log("amount 1", amount1);
-    }
-
     function increaseLiquidityCurrentRange(
         uint256 amountAdd0,
         uint256 amountAdd1
@@ -199,11 +177,11 @@ contract LiquidityExamples is IERC721Receiver {
             uint256 amount1
         )
     {
-        TransferHelper.safeTransferFrom(deposits[tokenId].token0, msg.sender, address(this), amountAdd0);
-        TransferHelper.safeTransferFrom(deposits[tokenId].token1, msg.sender, address(this), amountAdd1);
+        TransferHelper.safeTransferFrom(DAI, msg.sender, address(this), amountAdd0);
+        TransferHelper.safeTransferFrom(USDC, msg.sender, address(this), amountAdd1);
 
-        TransferHelper.safeApprove(deposits[tokenId].token0, address(nonfungiblePositionManager), amountAdd0);
-        TransferHelper.safeApprove(deposits[tokenId].token1, address(nonfungiblePositionManager), amountAdd1);
+        TransferHelper.safeApprove(DAI, address(nonfungiblePositionManager), amountAdd0);
+        TransferHelper.safeApprove(USDC, address(nonfungiblePositionManager), amountAdd1);
 
         INonfungiblePositionManager.IncreaseLiquidityParams memory params =
             INonfungiblePositionManager.IncreaseLiquidityParams({
@@ -218,6 +196,40 @@ contract LiquidityExamples is IERC721Receiver {
         (liquidity, amount0, amount1) = nonfungiblePositionManager.increaseLiquidity(params);
 
         console.log("liquidity", liquidity);
+        console.log("amount 0", amount0);
+        console.log("amount 1", amount1);
+    }
+
+    function getLiquidity(uint _tokenId) external view returns (uint128) {
+        (
+            ,
+            ,
+            ,
+            ,
+            ,
+            ,
+            ,
+            uint128 liquidity,
+            ,
+            ,
+            ,
+
+        ) = nonfungiblePositionManager.positions(_tokenId);
+        return liquidity;
+    }
+
+    function decreaseLiquidity(uint128 liquidity) external returns (uint amount0, uint amount1) {
+        INonfungiblePositionManager.DecreaseLiquidityParams memory params =
+            INonfungiblePositionManager.DecreaseLiquidityParams({
+                tokenId: tokenId,
+                liquidity: liquidity,
+                amount0Min: 0,
+                amount1Min: 0,
+                deadline: block.timestamp
+            });
+
+        (amount0, amount1) = nonfungiblePositionManager.decreaseLiquidity(params);
+
         console.log("amount 0", amount0);
         console.log("amount 1", amount1);
     }
