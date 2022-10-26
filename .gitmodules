@@ -1,0 +1,3 @@
+[submodule "read-only-reentrancy/lib/forge-std"]
+	path = read-only-reentrancy/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
