@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/t4sk/defi#readme",
   "dependencies": {
-    "@openzeppelin/contracts": "^4.3.2",
+    "@openzeppelin/contracts": "^5.0.1",
     "dotenv": "^16.0.1",
     "ganache-cli": "^6.12.2",
     "truffle": "^5.4.16"
